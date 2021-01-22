@@ -11,8 +11,8 @@ function main()
     #Eulerian velocity field
     U = EulerianVelocity(M)
     ∇U = VelocityGradient(M)
-    # Allocate FSE
-    FSE = [Matrix(1.0I,3,3) for i in 1:P.n]
+    # Allocate gradiend of deformation
+    F = [Matrix(1.0I,3,3) for i in 1:P.n]
 
     # Prepare Loop
     t = 0.0
@@ -23,18 +23,18 @@ function main()
 
     # Start loop
     l = fill(0.0,3,3) 
+    RK4 = RK(fill(0.0,3,3), fill(0.0,3,3), fill(0.0,3,3), fill(0.0,3,3))
     for cycle in 1:cyclemax
         for m in 1:P.n
             interp∇U!(l,m,∇U,P,M)
-            F[m] = updateFSE(F[m],l,Δt)
+            F[m] = updateFSE(F[m],l,Δt,RK4)
             advectparticle!(P,M,U,Δt,m)
         end
         t += Δt
     end
 
-    return U,∇U,FSE,P,P0
+    return U,∇U,F,P,P0
 end
 
-U,∇U,FSE,P,P0 = main()
-
-scatter(P.x, P.y, color=P0.y)
+U,∇U,F3D,P,P0 = main()
+scatter(P.x/1e3, P.y/1e3, color=P0.y, markersize=2)
