@@ -182,17 +182,17 @@ function advectparticle!(P,M,U,Δt,m)
     P.y[m] += (mVyA + 2*(mVyB + mVyC) + mVyD)/6*Δt
 end
 
-function updateFSE!(FSE0,l,Δt)
-    FSEᵢ = deepcopy(FSE0)
+function updateFSE(F0,l,Δt)
+    Fᵢ = deepcopy(F0)
     # 4th-order Runge-Kutta
-    Δ1 = l*FSEᵢ*Δt
-    FSEᵢ = FSE0 + 0.5*Δ1
-    Δ2 = l*FSEᵢ*Δt
-    FSEᵢ = FSE0 + 0.5*Δ2
-    Δ3 = l*FSEᵢ*Δt
-    FSEᵢ = FSE0 + Δ3
-    Δ4 = l*FSEᵢ*Δt
+    Δ1 = l*Fᵢ*Δt
+    Fᵢ = F0 + 0.5*Δ1
+    Δ2 = l*Fᵢ*Δt
+    Fᵢ = F0 + 0.5*Δ2
+    Δ3 = l*Fᵢ*Δt
+    Fᵢ = F0 + Δ3
+    Δ4 = l*Fᵢ*Δt
 
-    FSE0 += (Δ1 + 2*(Δ2 + Δ3) + Δ4)/6;
+    return F0 += (Δ1 + 2*(Δ2 + Δ3) + Δ4)/6;
 end
 
