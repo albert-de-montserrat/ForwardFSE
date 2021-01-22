@@ -26,7 +26,7 @@ function main()
     for cycle in 1:cyclemax
         for m in 1:P.n
             interp∇U!(l,m,∇U,P,M)
-            updateFSE!(FSE[m],l,Δt)
+            F[m] = updateFSE(F[m],l,Δt)
             advectparticle!(P,M,U,Δt,m)
         end
         t += Δt
