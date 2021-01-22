@@ -1,4 +1,4 @@
-import LinearAlgebra: I
+import LinearAlgebra: I, mul!
 
 struct MESH
     Δx::Float64
@@ -182,17 +182,33 @@ function advectparticle!(P,M,U,Δt,m)
     P.y[m] += (mVyA + 2*(mVyB + mVyC) + mVyD)/6*Δt
 end
 
-function updateFSE(F0,l,Δt)
-    Fᵢ = deepcopy(F0)
-    # 4th-order Runge-Kutta
-    Δ1 = l*Fᵢ*Δt
-    Fᵢ = F0 + 0.5*Δ1
-    Δ2 = l*Fᵢ*Δt
-    Fᵢ = F0 + 0.5*Δ2
-    Δ3 = l*Fᵢ*Δt
-    Fᵢ = F0 + Δ3
-    Δ4 = l*Fᵢ*Δt
+mutable struct RK
+    Δ1::Array{Float64,2}
+    Δ2::Array{Float64,2}
+    Δ3::Array{Float64,2}
+    Δ4::Array{Float64,2}
+end
 
-    return F0 += (Δ1 + 2*(Δ2 + Δ3) + Δ4)/6;
+function updateFSE(F0,l,Δt,RK4)
+    Fᵢ = deepcopy(F0)
+    # # 4th-order Runge-Kutta
+    # RK4.Δ1 .= l*Fᵢ*Δt
+    # Fᵢ = F0 + 0.5*RK4.Δ1
+    # RK4.Δ2 .= l*Fᵢ*Δt
+    # Fᵢ = F0 + 0.5*RK4.Δ2
+    # RK4.Δ3 .= l*Fᵢ*Δt
+    # Fᵢ = F0 + RK4.Δ3
+    # RK4.Δ4 .= l*Fᵢ*Δt
+
+    # 4th-order Runge-Kutta
+    mul!(RK4.Δ1, l,Fᵢ*Δt)
+    Fᵢ = F0 + 0.5*RK4.Δ1
+    mul!(RK4.Δ2, l,Fᵢ*Δt)
+    Fᵢ = F0 + 0.5*RK4.Δ2
+    mul!(RK4.Δ3, l,Fᵢ*Δt)
+    Fᵢ = F0 + RK4.Δ3
+    mul!(RK4.Δ4, l,Fᵢ*Δt)
+
+    return F0 += (RK4.Δ1 + 2*(RK4.Δ2 + RK4.Δ3) + RK4.Δ4)/6
 end
 
