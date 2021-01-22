@@ -1,8 +1,8 @@
 import LinearAlgebra: I
 
 struct MESH
-    Δx::Number
-    Δy::Number
+    Δx::Float64
+    Δy::Float64
     x::Array{Float64,1}
     y::Array{Float64,1}
     X::Array{Float64,2}
@@ -98,31 +98,31 @@ end
 
 function interp∇U!(l,m,∇U,P,M)
     xnum, ynum = size(M.X,2), size(M.X,1)
-    i = floor(Int,P.x[m]/M.Δx)+1
-    j = floor(Int,P.y[m]/M.Δy)+1
+    i = floor(Int,P.x[m]/M.Δx) + 1
+    j = floor(Int,P.y[m]/M.Δy) + 1
 
     if i<1
         i = 1
-        Δxx = 0
+        Δxx = 0.0
     elseif i > xnum-1
         i = xnum-1
-        Δxx = 1
+        Δxx = 1.0
     else
         Δxx = (P.x[m]-M.x[i])/M.Δx
     end
     if j<1
         j = 1
-        Δyy = 0
+        Δyy = 0.0
     elseif j > ynum-1
         j = ynum-1
-        Δyy = 1
+        Δyy = 1.0
     else
         Δyy = (P.y[m]-M.y[j])/M.Δy
     end
     
-    w1 = (1-Δxx)*(1-Δyy)
-    w2 = (1-Δxx)*Δyy
-    w3 = Δxx*(1-Δyy)
+    w1 = (1.0-Δxx)*(1.0-Δyy)
+    w2 = (1.0-Δxx)*Δyy
+    w3 = Δxx*(1.0-Δyy)
     w4 = Δxx*Δyy
 
     @inbounds l[1,1] = ∇U.∂x∂x[j,i]*w1 + ∇U.∂x∂x[j+1,i]*w2 + ∇U.∂x∂x[j,i+1]*w3 + ∇U.∂x∂x[j+1,i+1]*w4
@@ -140,26 +140,26 @@ function interpVel(mxA,myA,M,U)
 
     if i<1
         i = 1
-        Δxx = 0
+        Δxx = 0.0
     elseif i > xnum-1
         i = xnum-1
-        Δxx = 1
+        Δxx = 1.0
     else
         Δxx = (mxA-M.x[i])/M.Δx
     end
     if j<1
         j = 1
-        Δyy = 0
+        Δyy = 0.0
     elseif j > ynum-1
         j = ynum-1
-        Δyy = 1
+        Δyy = 1.0
     else
         Δyy = (myA-M.y[j])/M.Δy
     end
     
-    w1 = (1-Δxx)*(1-Δyy)
-    w2 = (1-Δxx)*Δyy
-    w3 = Δxx*(1-Δyy)
+    w1 = (1.0-Δxx)*(1.0-Δyy)
+    w2 = (1.0-Δxx)*Δyy
+    w3 = Δxx*(1.0-Δyy)
     w4 = Δxx*Δyy
 
     @inbounds Ux = U.x[j,i]*w1 + U.x[j+1,i]*w2 + U.x[j,i+1]*w3 + U.x[j+1,i+1]*w4
